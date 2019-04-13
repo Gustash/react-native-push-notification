@@ -9,7 +9,8 @@
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:allowBackup="false"
-      android:theme="@style/AppTheme">
+      android:theme="@style/AppTheme"
+      android:usesCleartextTraffic="true">
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -19,6 +20,14 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+      </activity>
+      <activity
+        android:name=".Bubble.BubbleActivity"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+        android:windowSoftInputMode="adjustResize"
+        android:allowEmbedded="true"
+        android:documentLaunchMode="always"
+        android:resizeableActivity="true">
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
 
