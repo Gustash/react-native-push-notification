@@ -103,8 +103,8 @@ export default class NotifService {
       actions: '["Yes", "No"]', // (Android only) See the doc for notification actions to know more
 
       /* Bubble info */
-      bubbleActivity: "com.example.Bubble.BubbleActivity",
-      priority: "high"
+      bubbleActivity: "com.example.Bubble.NotificationBubbleActivity",
+      bubbleDesiredHeight: 600
     });
   }
 

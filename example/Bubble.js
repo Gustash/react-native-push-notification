@@ -1,6 +1,32 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, ScrollView, Dimensions } from "react-native";
 
-const Bubble = () => <Text>I am a Bubble!</Text>;
+const Bubble = () => {
+  const { height } = Dimensions.get("window");
+
+  return (
+    <ScrollView
+      contentContainerStyle={{ alignItems: "center", justifyContent: "center" }}
+    >
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+      <Text>I am a Bubble with a {height} height.</Text>
+    </ScrollView>
+  );
+};
 
 export default Bubble;

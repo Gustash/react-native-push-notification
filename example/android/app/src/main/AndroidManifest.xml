@@ -22,7 +22,7 @@
         </intent-filter>
       </activity>
       <activity
-        android:name=".Bubble.BubbleActivity"
+        android:name=".Bubble.NotificationBubbleActivity"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
         android:windowSoftInputMode="adjustResize"
         android:allowEmbedded="true"

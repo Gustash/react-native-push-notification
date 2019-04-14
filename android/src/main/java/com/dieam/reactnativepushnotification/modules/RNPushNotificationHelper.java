@@ -1,5 +1,6 @@
 package com.dieam.reactnativepushnotification.modules;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.Notification;
@@ -9,10 +10,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,7 +23,6 @@ import android.os.Bundle;
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
-import com.dieam.reactnativepushnotification.R;
 import com.facebook.react.bridge.ReadableMap;
 
 import org.json.JSONArray;
@@ -54,30 +51,10 @@ public class RNPushNotificationHelper {
         this.scheduledNotificationsPersistence = context.getSharedPreferences(RNPushNotificationHelper.PREFERENCES_KEY, Context.MODE_PRIVATE);
     }
 
-    public Class getMainActivityClass(Bundle bundle) {
+    public Class getMainActivityClass() {
         String packageName = context.getPackageName();
-        PackageManager packageManager = context.getPackageManager();
 
-        String bubbleActivity = bundle.getString("bubbleActivity");
-        Log.d(LOG_TAG, "Bubble activity: " + bubbleActivity);
-        if (bubbleActivity != null) {
-            try {
-                PackageInfo info = packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
-                ActivityInfo[] list = info.activities;
-
-                for (ActivityInfo activityInfo : list) {
-                    if (activityInfo.name.equals(bubbleActivity)) {
-                        return Class.forName(activityInfo.name);
-                    }
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
+        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         String className = launchIntent.getComponent().getClassName();
         try {
             return Class.forName(className);
@@ -102,7 +79,7 @@ public class RNPushNotificationHelper {
     }
 
     public void sendNotificationScheduled(Bundle bundle) {
-        Class intentClass = getMainActivityClass(bundle);
+        Class intentClass = getMainActivityClass();
         if (intentClass == null) {
             Log.e(LOG_TAG, "No activity class found for the scheduled notification");
             return;
@@ -159,7 +136,7 @@ public class RNPushNotificationHelper {
 
     public void sendToNotificationCentre(Bundle bundle) {
         try {
-            Class intentClass = getMainActivityClass(bundle);
+            Class intentClass = getMainActivityClass();
             if (intentClass == null) {
                 Log.e(LOG_TAG, "No activity class found for the notification");
                 return;
@@ -298,7 +275,7 @@ public class RNPushNotificationHelper {
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
             Intent intent = new Intent(context, intentClass);
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            // intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             bundle.putBoolean("userInteraction", true);
             intent.putExtra("notification", bundle);
 
@@ -410,15 +387,11 @@ public class RNPushNotificationHelper {
 
             Notification info = notification.build();
 
-            boolean isBubble = bundle.getString("bubbleActivity") != null;
+            if (bundle.containsKey("bubbleActivity") && Build.VERSION.PREVIEW_SDK_INT != 0) {
+                String bubbleActivity = bundle.getString("bubbleActivity");
 
-            if (isBubble && Build.VERSION.PREVIEW_SDK_INT != 0) {
-                PendingIntent bubbleIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-                Notification.BubbleMetadata.Builder bubbleBuilder =
-                        new Notification.BubbleMetadata.Builder()
-                                .setDesiredHeight(600)
-                                .setIntent(bubbleIntent);
+                Intent bubbleTarget = new Intent(context, Class.forName(bubbleActivity));
+                PendingIntent bubbleIntent = PendingIntent.getActivity(context, notificationID, bubbleTarget, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 int bubbleIconResInt;
 
@@ -439,7 +412,14 @@ public class RNPushNotificationHelper {
                 }
 
                 Bitmap bubbleIconBmp = BitmapFactory.decodeResource(res, bubbleIconResInt);
-                bubbleBuilder.setIcon(Icon.createWithBitmap(bubbleIconBmp));
+
+                Notification.BubbleMetadata.Builder bubbleBuilder =
+                        new Notification.BubbleMetadata.Builder()
+                                .setIcon(Icon.createWithBitmap(bubbleIconBmp))
+                                .setIntent(bubbleIntent);
+
+                int bubbleDesiredHeight = bundle.getInt("bubbleDesiredHeight");
+                bubbleBuilder.setDesiredHeight(bubbleDesiredHeight);
 
                 Notification.BubbleMetadata bubbleMetadata = bubbleBuilder.build();
 

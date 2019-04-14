@@ -1,8 +1,8 @@
 package com.example.Bubble;
 
-import com.facebook.react.ReactActivity;
+import com.dieam.reactnativepushnotification.helpers.BubbleActivity;
 
-public class BubbleActivity extends ReactActivity {
+public class NotificationBubbleActivity extends BubbleActivity {
 
     /**
      * Returns the name of the main component registered from JavaScript.
